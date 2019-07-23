@@ -121,3 +121,54 @@ int get_stas(struct sta* stalist)
 	return 0;
 }
 
+int ip_mac(char* ip, char* mac, int ip_to_mac)
+{
+	char ip_mac_table[BFSIZE*5];
+	char buffer[BFSIZE];
+	char *loc, *loc2;
+	
+	FILE *fp = fopen("ip-mac", "r");
+	if(!fp) return -1;
+	
+	while(!feof(fp))
+	{
+		if(fgets(buffer, BFSIZE, fp))
+		{
+			strcat(ip_mac_table, buffer);
+		}
+	}
+	
+	if(DEBUG)	printf("ip_mac table: \n%s", ip_mac_table);
+	
+	
+	if(ip_to_mac)
+	{				
+		loc = strstr(ip_mac_table,ip);
+		loc2 = strstr(loc,":");
+		strncpy(mac, loc2-2, 17);
+		strcat(mac, "\0");
+	}
+	else
+	{
+		loc = strstr(ip_mac_table,mac);
+		loc2 = strstr(loc-3," ");
+		// printf("loc2-loc= %d\n",loc2-loc);
+		strncpy(ip, loc - 13, loc2 - loc + 13);
+		strcat(ip, "\0");
+	}
+
+	return 0;
+}
+
+int get_local_mac(char* local_mac)
+{
+	char buff[BFSIZE];
+	char *loc;
+	readcmd("ifconfig wlan0 | grep \"ether\" ", buff);
+	printf("buff = %s \n",buff);
+	loc = strstr(buff, "ether");
+	strncpy(local_mac, loc + 6, 17);
+	return 0;
+}
+
+

@@ -35,3 +35,5 @@ struct sta
 int readcmd(char* cmd, char* output);
 int cmd(char* cmd);
 int get_stas(struct sta* stalist);
+int ip_mac(char* ip, char* mac, int ip_to_mac);
+int get_local_mac(char* local_mac);
