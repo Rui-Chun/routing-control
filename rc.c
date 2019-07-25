@@ -5,7 +5,7 @@ int readcmd(char* cmd, char* output)
 	char buffer[BFSIZE];
 	FILE  *pipe = popen(cmd, "r");
 	if(!pipe) return -1;
-	
+	output[0] = 0;
 	while(!feof(pipe))
 	{
 		if(fgets(buffer, BFSIZE, pipe))
@@ -28,6 +28,23 @@ int cmd(char* cmd)
 	return 0;
 }
 
+int str2num(char *str, int* num, int base, int len)
+{
+	char *ptr, *ptr1;
+	int idx=0;
+	num[idx] = strtol(str,&ptr, base);
+	idx++;
+	ptr++;
+	
+	while(idx<len)
+	{
+		num[idx] = strtol(ptr,&ptr1, base);
+		ptr = ptr1+1;
+		idx++;
+	}
+	return 0;
+}
+
 int get_info_str(char* start, char* temp_info, char* info_val)
 {
 	char *loc, *loc2;
@@ -40,7 +57,7 @@ int get_info_str(char* start, char* temp_info, char* info_val)
 	info_val[val_len] = '\0';
 }
 
-int get_stas(struct sta* stalist)
+int get_stas(struct sta* stalist, int *num)
 {
 	char sta_info[BFSIZE];
 	char buff[BFSIZE];
@@ -63,17 +80,21 @@ int get_stas(struct sta* stalist)
 		strcpy(temp_info, "Station ");
 		strncpy(stalist[idx].mac_addr_str, start+ strlen(temp_info), 17);
 		stalist[idx].mac_addr_str[17] = '\0';
-		if(DEBUG) printf("%s \n", stalist[idx].mac_addr_str);
+		str2num(stalist[idx].mac_addr_str, stalist[idx].mac_addr_int, 16, 6);
+		if(DEBUG) 
+		{
+			printf("%d: \n", stalist[idx].mac_addr_int[0]);
+			printf("%d \n", stalist[idx].rxbytes);
+			printf("%d \n", atoi(info_val));
+		}
 		
 		strcpy(temp_info, "rx bytes:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].rxbytes = atoi(info_val);
-		printf("%d \n", atoi(info_val));
 		
 		strcpy(temp_info, "rx packets:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].rxpackets = atoi(info_val);
-		printf("%d \n", atoi(info_val));
 		
 		strcpy(temp_info, "tx bytes:	");
 		get_info_str(start, temp_info, info_val);
@@ -117,6 +138,7 @@ int get_stas(struct sta* stalist)
 		idx++;
 	}
 	
+	*num = idx;
 	
 	return 0;
 }
@@ -171,4 +193,15 @@ int get_local_mac(char* local_mac)
 	return 0;
 }
 
+
+int write_ctrl(struct routing_ctrl *ctrl_list, int num)
+{
+	int i;
+	FILE *fp = fopen("mac-power-rate","w");
+	if(!fp) return -1;
+	
+
+	
+	return 0;
+}
 
