@@ -4,17 +4,41 @@
 
 #define BFSIZE 1024
 #define IPLEN 20
+#define IPNUM 4
 #define MACLEN 20
+#define MACNUM 6
 #define MAXSTAS 20
 #define INFONUM 10
 
 #define DEBUG 1 
 
+struct ip_addr
+{
+	char str_v[IPLEN]; //string version
+	char int_v[IPNUM]; // int version
+};
+
+struct mac_addr
+{
+	char str_v[MACLEN]; //string version
+	char int_v[MACNUM];
+};
+
+struct routing_ctrl
+{
+	struct ip_addr dst_ip;
+	struct ip_addr nexthop_ip;
+};
+
+struct rate_ctrl
+{
+	int rate_idx[4]; // see ar5461Phy.c for rate 
+	int tries[4];    // num of retires
+};
 
 struct sta
 {
-	int mac_addr_int[MACLEN];
-	char mac_addr_str[MACLEN];
+	struct mac_addr mac;
 	
 	int rxbytes;
 	int rxpackets;
@@ -29,32 +53,24 @@ struct sta
 	float txbitrate; //Mbps 
 	float rxbitrate;
 	// note that info got from 'station dump' has delay 
-	
 
+	struct rate_ctrl rete_series;
 };
 
 struct local_info
 {
-	char local_ip[IPLEN];
-	char local_mac[MACLEN];
+	struct ip_addr ip;
+	struct mac_addr mac;
+
 	int sta_num; // num of sta connected with local
-};
+	struct sta stalist[MAXSTAS];
 
-struct routing_ctrl
-{
-	char dst_ip[IPLEN];
-	char dst_mac[MACLEN];
-	
-	char nexthop_ip[IPLEN];
-	char nexthop_mac[MACLEN];
-	
-	int power;// dbm
-	int rate_idx; //see ar5416Phy.c in open-firmwre for reference
+	int tx_power; // dbm
 };
-
 
 int readcmd(char* cmd, char* output);
 int cmd(char* cmd);
+int str2num(char *str, int* num, int base, int len);
 int get_stas(struct sta* stalist, int* num);
 int ip_mac(char* ip, char* mac, int ip_to_mac);
 int get_local_mac(char* local_mac);

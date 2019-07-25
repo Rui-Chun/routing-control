@@ -13,10 +13,7 @@ int test()
 	// char *str = "100  ";
 	// printf(" value = %d \n", atoi(str));
 	struct sta stalist[MAXSTAS];
-	struct local_info local = 
-	{
-		.local_ip = "168.192.1.15",
-	};
+	struct local_info local;
 	// char local_ip[20] = "192.168.1.15";
 	// char local_mac[20];
 	
@@ -39,7 +36,11 @@ int test()
 
 int main()
 {
-	test();
+	struct local_info local;
+	memset(&local,0,sizeof(local));
 	
+	get_stas(local.stalist, &local.sta_num);
+	
+
 	return 0;
 }

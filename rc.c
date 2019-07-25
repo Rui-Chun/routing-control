@@ -78,15 +78,9 @@ int get_stas(struct sta* stalist, int *num)
 	while(start)
 	{
 		strcpy(temp_info, "Station ");
-		strncpy(stalist[idx].mac_addr_str, start+ strlen(temp_info), 17);
-		stalist[idx].mac_addr_str[17] = '\0';
-		str2num(stalist[idx].mac_addr_str, stalist[idx].mac_addr_int, 16, 6);
-		if(DEBUG) 
-		{
-			printf("%d: \n", stalist[idx].mac_addr_int[0]);
-			printf("%d \n", stalist[idx].rxbytes);
-			printf("%d \n", atoi(info_val));
-		}
+		strncpy(stalist[idx].mac.str_v, start+ strlen(temp_info), 17);
+		stalist[idx].mac.str_v[17] = '\0';
+		str2num(stalist[idx].mac.str_v, stalist[idx].mac.int_v, 16, 6);
 		
 		strcpy(temp_info, "rx bytes:	");
 		get_info_str(start, temp_info, info_val);
@@ -99,43 +93,51 @@ int get_stas(struct sta* stalist, int *num)
 		strcpy(temp_info, "tx bytes:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].txbytes = atoi(info_val);
-		printf("%d \n", atoi(info_val));
+
 		
 		strcpy(temp_info, "tx packets:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].txpackets = atoi(info_val);
-		printf("%d \n", atoi(info_val));
 		
 		strcpy(temp_info, "tx retries:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].txretries = atoi(info_val);
-		printf("%d \n", atoi(info_val));
 		
 		strcpy(temp_info, "tx failed:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].txfailed = atoi(info_val);
-		printf("%d \n", atoi(info_val));
 
 		strcpy(temp_info, "signal avg:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].signal = atoi(info_val);
-		printf("%d \n", atoi(info_val));
 		
 		strcpy(temp_info, "tx bitrate:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].txbitrate = atof(info_val);
-		printf("%f \n", atof(info_val));
 
 		strcpy(temp_info, "rx bitrate:	");
 		get_info_str(start, temp_info, info_val);
 		stalist[idx].rxbitrate = atof(info_val);
-		printf("%f \n", atof(info_val));
+
+		if(DEBUG) 
+		{
+			printf("%s \n", stalist[idx].mac.str_v);
+			printf("%d \n", stalist[idx].rxbytes);
+			printf("%d \n", stalist[idx].rxpackets);
+			printf("%d \n", stalist[idx].txbytes);
+			printf("%d \n", stalist[idx].txpackets);
+			printf("%d \n", stalist[idx].txretries);
+			printf("%d \n", stalist[idx].txfailed);
+			printf("%d \n", stalist[idx].signal);
+			printf("%f \n", stalist[idx].txbitrate);
+			printf("%f \n", stalist[idx].rxbitrate);
+		}
 		
-		
-		// loop for rest stations
+		// loop for next stations
 		strcpy(temp_info, "Station ");
 		start = strstr(start + 20, temp_info);
 		idx++;
+
 	}
 	
 	*num = idx;
@@ -194,14 +196,52 @@ int get_local_mac(char* local_mac)
 }
 
 
-int write_ctrl(struct routing_ctrl *ctrl_list, int num)
+int set_tx_power(struct local_info *local_ptr)
 {
-	int i;
-	FILE *fp = fopen("mac-power-rate","w");
-	if(!fp) return -1;
-	
-
-	
 	return 0;
 }
+
+int set_rate_ctrl(struct local_info *local_ptr)
+{
+	int i, j;
+	struct sta *stas = local_ptr->stalist;
+	char buff[50];
+	FILE *fp;
+
+	// need to change the firmware and driver to make it easier 
+
+	for(i=0;i<local_ptr->sta_num;i++)
+	{
+		fp = fopen("/proc/ath9k-htc-rate","w");
+		memset(buff,0,sizeof(char)*50);
+
+		strcat(buff,"0");
+		strcat(buff," ");
+
+		for(j=0;j<6;j++)
+		{
+			strcat(buff,itoa(stas[i].mac.int_v[j]));
+			strcat(buff," ");
+		}
+		for(j=0;j<4;j++)
+		{
+			strcat(buff,itoa(stas[i].rete_series.rate_idx[j]));
+			strcat(buff," ");
+			strcat(buff,itoa(stas[i].rete_series.tries[j]));
+			strcat(buff," ");
+		}
+
+		if(!fprintf(fp, buff)) 
+			printf("cannot write /proc/ath9k-htc-rate. \n");
+
+		fclose(fp);
+	}
+}
+
+int set_routing_strl(struct local_info *local_ptr)
+{
+	// call cmd() to change routing table
+	return 0;
+}
+
 
