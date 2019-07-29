@@ -7,7 +7,8 @@
 #define IPNUM 4
 #define MACLEN 20
 #define MACNUM 6
-#define MAXSTAS 20
+#define MAXSTAS 10
+#define MAXNODES 20
 #define INFONUM 10
 
 #define DEBUG 1 
@@ -36,6 +37,17 @@ struct rate_ctrl
 	int tries[4];    // num of retires
 };
 
+struct node
+{
+	struct ip_addr ip;
+	
+	int is_sta; // whether is a sta
+	
+	struct ip_addr nexthop_ip;
+
+	// TODO: info get form this node
+};
+
 struct sta
 {
 	struct mac_addr mac;
@@ -62,8 +74,11 @@ struct local_info
 	struct ip_addr ip;
 	struct mac_addr mac;
 
-	int sta_num; // num of sta connected with local
+	int sta_num; // num of sta connected with local, nodes that in range of communication
 	struct sta stalist[MAXSTAS];
+
+	int node_num; // num of all the node in the netork
+	struct node nodelist;
 
 	int tx_power; // dbm
 };

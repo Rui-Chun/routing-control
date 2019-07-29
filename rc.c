@@ -198,6 +198,12 @@ int get_local_mac(char* local_mac)
 
 int set_tx_power(struct local_info *local_ptr)
 {
+	// for now , packet-level is not implemented 
+	FILE *fp = fopen("/proc/ath9k-htc-power", "w");
+	if(!fp){printf("power file error. \n"); return -1;}
+
+	fprintf(fp,atoi(local_ptr->tx_power));
+
 	return 0;
 }
 
@@ -205,17 +211,21 @@ int set_rate_ctrl(struct local_info *local_ptr)
 {
 	int i, j;
 	struct sta *stas = local_ptr->stalist;
-	char buff[50];
+	char buff[50] = "0";
 	FILE *fp;
 
-	// need to change the firmware and driver to make it easier 
-
+	// reset first
+	fp = fopen("/proc/ath9k-htc-rate","w");
+	fprintf(fp,buff);
+	fclose(fp);
+	
+	// add all the ctrl rule
 	for(i=0;i<local_ptr->sta_num;i++)
 	{
 		fp = fopen("/proc/ath9k-htc-rate","w");
 		memset(buff,0,sizeof(char)*50);
 
-		strcat(buff,"0");
+		strcat(buff,"1");
 		strcat(buff," ");
 
 		for(j=0;j<6;j++)
@@ -236,10 +246,13 @@ int set_rate_ctrl(struct local_info *local_ptr)
 
 		fclose(fp);
 	}
+
+	return 0;
 }
 
 int set_routing_strl(struct local_info *local_ptr)
 {
+	//must config ip_forward & redirects first
 	// call cmd() to change routing table
 	return 0;
 }
