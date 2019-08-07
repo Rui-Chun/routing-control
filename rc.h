@@ -10,6 +10,8 @@
 #define MAXSTAS 10
 #define MAXNODES 20
 #define INFONUM 10
+#define LOCALIP "192.168.1.x"
+#define ETH0IP "192.168.2.x"
 
 #define DEBUG 1 
 
