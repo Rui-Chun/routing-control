@@ -55,6 +55,8 @@ int get_info_str(char* start, char* temp_info, char* info_val)
 	val_len = loc2 - loc - strlen(temp_info) ;
 	strncpy(info_val, loc + strlen(temp_info) , val_len);
 	info_val[val_len] = '\0';
+
+	return 0;
 }
 
 int get_stas(struct sta* stalist, int *num)
@@ -202,7 +204,10 @@ int set_tx_power(struct local_info *local_ptr)
 	FILE *fp = fopen("/proc/ath9k-htc-power", "w");
 	if(!fp){printf("power file error. \n"); return -1;}
 
-	fprintf(fp,atoi(local_ptr->tx_power));
+	char tempNum[10];
+	memset(tempNum,0,sizeof(char)*10);
+	sprintf(tempNum,"%d",local_ptr->tx_power);
+	fprintf(fp, "%s", tempNum);
 
 	return 0;
 }
@@ -212,11 +217,12 @@ int set_rate_ctrl(struct local_info *local_ptr)
 	int i, j;
 	struct sta *stas = local_ptr->stalist;
 	char buff[50] = "0";
+	char tempNum[10];
 	FILE *fp;
 
 	// reset first
 	fp = fopen("/proc/ath9k-htc-rate","w");
-	fprintf(fp,buff);
+	fprintf(fp,"%s",buff);
 	fclose(fp);
 	
 	// add all the ctrl rule
@@ -230,18 +236,24 @@ int set_rate_ctrl(struct local_info *local_ptr)
 
 		for(j=0;j<6;j++)
 		{
-			strcat(buff,itoa(stas[i].mac.int_v[j]));
+			memset(tempNum,0,sizeof(char)*10);
+			sprintf(tempNum,"%d",stas[i].mac.int_v[j]);
+			strcat(buff, tempNum);
 			strcat(buff," ");
 		}
 		for(j=0;j<4;j++)
 		{
-			strcat(buff,itoa(stas[i].rete_series.rate_idx[j]));
+			memset(tempNum,0,sizeof(char)*10);
+			sprintf(tempNum,"%d",stas[i].rete_series.rate_idx[j]);
+			strcat(buff, tempNum);
 			strcat(buff," ");
-			strcat(buff,itoa(stas[i].rete_series.tries[j]));
+			memset(tempNum,0,sizeof(char)*10);
+			sprintf(tempNum,"%d",stas[i].rete_series.tries[j]);
+			strcat(buff,tempNum);
 			strcat(buff," ");
 		}
 
-		if(!fprintf(fp, buff)) 
+		if(!fprintf(fp, "%s", buff)) 
 			printf("cannot write /proc/ath9k-htc-rate. \n");
 
 		fclose(fp);

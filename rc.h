@@ -18,13 +18,13 @@
 struct ip_addr
 {
 	char str_v[IPLEN]; //string version
-	char int_v[IPNUM]; // int version
+	int int_v[IPNUM]; // int version
 };
 
 struct mac_addr
 {
 	char str_v[MACLEN]; //string version
-	char int_v[MACNUM];
+	int int_v[MACNUM];
 };
 
 struct routing_ctrl
