@@ -6,7 +6,7 @@ int main()
 
     // set type as mesh
     cmd("sudo ifconfig wlan0 down");
-    cmd("sudo iw set type mesh");
+    cmd("sudo iw wlan0 set type mesh");
     cmd("sudo ifconfig wlan0 up");
 
     //set mesh ip addr
