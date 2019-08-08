@@ -23,7 +23,7 @@ int main()
         str2num(buffer,ctrl,10,7);
         
         memset(buffer,0,sizeof(char)*BFSIZE);
-        sprintf(buffer, "iperf3 -c %d.%d.%d.%d -p %d -t %d -b %dM -J -V --logfile ./data/cl-flow.json", ctrl[0], ctrl[1], ctrl[2], ctrl[3], ctrl[4], ctrl[5], ctrl[6]);
+        sprintf(buffer, "iperf3 -c %d.%d.%d.%d -p %d -t %d -b %dM -u -J -V --logfile ./data/cl-flow.json", ctrl[0], ctrl[1], ctrl[2], ctrl[3], ctrl[4], ctrl[5], ctrl[6]);
 
         cmd(buffer);
         fclose(fp);
