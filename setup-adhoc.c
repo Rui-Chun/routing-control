@@ -19,7 +19,7 @@ int main()
     cmd("sudo iw wlan0 set txpower fixed 0");
 
     // join or create a ad-hoc net
-    cmd("sudo iw wlan0 ibss join RaspAdhoc freq 2442");
+    cmd("sudo iw wlan0 ibss join RaspAdhoc 2442");
 
     // set eth0 ip for ssh
     memset(cmdBuff,0,sizeof(char)*BFSIZE);
