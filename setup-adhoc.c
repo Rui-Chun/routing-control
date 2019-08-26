@@ -27,5 +27,7 @@ int main()
     strcat(cmdBuff,ETH0IP);
     cmd(cmdBuff);
 
+    cmd("sudo /home/pi/OONF/build/olsrd2_static wlan0");
+
     return 0;
 }
