@@ -1,0 +1,9 @@
+1.change firmware if need : firmwares folder
+
+2.change time zone and set time, if need print route table
+
+3. change interfaces file & cp it into /etc/network
+
+4.compile all .c file  : setup-adhoc record-route
+
+5.change startup config : /etc/rc.local, add setup-adhoc
